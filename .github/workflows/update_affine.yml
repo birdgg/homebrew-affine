@@ -32,7 +32,7 @@ jobs:
           LATEST_SHA256_X64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-x64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
 
           # Update the Cask file
-          cat <<EOF > Casks/affine-canary.rb
+          cat <<EOF > casks/affine-canary.rb
           cask "affine-canary" do
             version "${LATEST_VERSION}"
             if Hardware::CPU.arm?
@@ -49,7 +49,7 @@ jobs:
             auto_updates true
             depends_on macos: ">= :sierra"
 
-            app "AFFiNE Canary.app"
+            app "AFFiNE-canary.app"
           end
           EOF
 
