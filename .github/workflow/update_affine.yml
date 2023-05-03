@@ -1,0 +1,60 @@
+name: Update AFFiNE Canary Cask
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at 00:00
+
+jobs:
+  update_cask:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y jq
+          gem install json
+
+      - name: Update Cask
+        run: |
+          # Get the latest release information from GitHub API
+          LATEST_RELEASE_INFO=$(curl --silent "https://api.github.com/repos/toeverything/AFFiNE/releases/latest")
+          LATEST_VERSION=$(echo $LATEST_RELEASE_INFO | jq -r '.tag_name' | sed 's/^v//')
+          LATEST_SHA256_ARM64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-arm64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
+          LATEST_SHA256_X64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-x64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
+
+          # Update the Cask file
+          cat <<EOF > Casks/affine-canary.rb
+cask "affine-canary" do
+  version "${LATEST_VERSION}"
+  if Hardware::CPU.arm?
+    sha256 "${LATEST_SHA256_ARM64}"
+    url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-arm64.dmg"
+  else
+    sha256 "${LATEST_SHA256_X64}"
+    url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-x64.dmg"
+  end
+
+  name "AFFiNE Canary"
+  homepage "https://github.com/toeverything/AFFiNE"
+
+  auto_updates true
+  depends_on macos: ">= :sierra"
+
+  app "AFFiNE Canary.app"
+end
+EOF
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "Update AFFiNE Canary to ${LATEST_VERSION}"
+          title: "Update AFFiNE Canary to ${LATEST_VERSION}"
+          body: "This PR updates the Cask for AFFiNE Canary to the latest version ${LATEST_VERSION}."
