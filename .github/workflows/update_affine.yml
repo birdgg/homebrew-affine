@@ -43,7 +43,7 @@ jobs:
               url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-x64.dmg"
             end
 
-            name "AFFiNE Canary"
+            name "AFFiNE"
             homepage "https://github.com/toeverything/AFFiNE"
 
             auto_updates true

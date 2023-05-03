@@ -1,0 +1,29 @@
+name: Auto Merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  auto_merge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'github-actions[bot]'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Auto Merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if the PR title starts with "Update AFFiNE Canary"
+          PR_TITLE=$(gh pr view https://github.com/${{ github.repository }}/pull/${{ github.event.number }} --json title -q ".title")
+          if [[ $PR_TITLE == "Update AFFiNE Canary"* ]]; then
+            gh pr merge --merge --auto --squash ${{ github.event.number }}
+            echo "Merged pull request #${{ github.event.number }}"
+          else
+            echo "Pull request #${{ github.event.number }} does not match auto-merge criteria"
+          fi
