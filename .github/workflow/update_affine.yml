@@ -3,6 +3,7 @@ name: Update AFFiNE Canary Cask
 on:
   schedule:
     - cron: '0 0 * * *'  # Runs daily at 00:00
+  workflow_dispatch:
 
 jobs:
   update_cask:
@@ -25,7 +26,7 @@ jobs:
       - name: Update Cask
         run: |
           # Get the latest release information from GitHub API
-          LATEST_RELEASE_INFO=$(curl --silent "https://api.github.com/repos/toeverything/AFFiNE/releases/latest")
+          LATEST_RELEASE_INFO=$(curl --silent "https://api.github.com/repos/toeverything/AFFiNE/releases" | jq '.[0]')
           LATEST_VERSION=$(echo $LATEST_RELEASE_INFO | jq -r '.tag_name' | sed 's/^v//')
           LATEST_SHA256_ARM64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-arm64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
           LATEST_SHA256_X64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-x64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
