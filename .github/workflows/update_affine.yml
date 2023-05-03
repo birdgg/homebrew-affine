@@ -31,6 +31,8 @@ jobs:
           LATEST_SHA256_ARM64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-arm64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
           LATEST_SHA256_X64=$(curl -sL "https://github.com/toeverything/AFFiNE/releases/download/v${LATEST_VERSION}/affine-canary-macos-x64.dmg" | shasum -a 256 | cut -d ' ' -f 1)
 
+          echo "${LATEST_VERSION}" > latest_version.txt
+
           # Update the Cask file
           cat <<EOF > casks/affine-canary.rb
           cask "affine-canary" do
@@ -53,9 +55,24 @@ jobs:
           end
           EOF
 
+      - name: Upload Latest Version
+        uses: actions/upload-artifact@v2
+        with:
+          name: latest-version
+          path: latest_version.txt
+
+      - name: Download Latest Version
+        uses: actions/download-artifact@v2
+        with:
+          name: latest-version
+
+      - name: Set Latest Version
+        run: |
+          LATEST_VERSION=$(cat latest_version.txt)
+          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "Update AFFiNE Canary to ${LATEST_VERSION}"
-          title: "Update AFFiNE Canary to ${LATEST_VERSION}"
-          body: "This PR updates the Cask for AFFiNE Canary to the latest version ${LATEST_VERSION}."
+          commit-message: "Update AFFiNE Canary to ${env.LATEST_VERSION}"
+          title: "Update AFFiNE Canary to ${env.LATEST_VERSION}"
