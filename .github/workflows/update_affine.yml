@@ -2,7 +2,7 @@ name: Update AFFiNE Canary Cask
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at 00:00
+    - cron: "0 0 * * *" # Runs daily at 00:00
   workflow_dispatch:
 
 jobs:
@@ -12,12 +12,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-      
+
       - name: Install dependencies
         run: |
           sudo apt-get install -y jq
@@ -33,25 +33,25 @@ jobs:
 
           # Update the Cask file
           cat <<EOF > Casks/affine-canary.rb
-cask "affine-canary" do
-  version "${LATEST_VERSION}"
-  if Hardware::CPU.arm?
-    sha256 "${LATEST_SHA256_ARM64}"
-    url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-arm64.dmg"
-  else
-    sha256 "${LATEST_SHA256_X64}"
-    url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-x64.dmg"
-  end
+          cask "affine-canary" do
+            version "${LATEST_VERSION}"
+            if Hardware::CPU.arm?
+              sha256 "${LATEST_SHA256_ARM64}"
+              url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-arm64.dmg"
+            else
+              sha256 "${LATEST_SHA256_X64}"
+              url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-x64.dmg"
+            end
 
-  name "AFFiNE Canary"
-  homepage "https://github.com/toeverything/AFFiNE"
+            name "AFFiNE Canary"
+            homepage "https://github.com/toeverything/AFFiNE"
 
-  auto_updates true
-  depends_on macos: ">= :sierra"
+            auto_updates true
+            depends_on macos: ">= :sierra"
 
-  app "AFFiNE Canary.app"
-end
-EOF
+            app "AFFiNE Canary.app"
+          end
+          EOF
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
