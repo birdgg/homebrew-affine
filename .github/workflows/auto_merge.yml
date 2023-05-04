@@ -1,29 +1,19 @@
 name: Auto Merge
 
 on:
-  pull_request:
+  workflow_run:
     types:
-      - opened
-      - synchronize
+      - completed
+    workflows:
+      - "Update AFFiNE Canary Cask"
 
 jobs:
-  auto_merge:
+  merge-me:
+    name: Merge me!
     runs-on: ubuntu-latest
-    if: github.actor == 'github-actions[bot]'
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Auto Merge
-        env:
+      - name: Merge me!
+        if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor == 'github-actions[bot]' }}
+        uses: ridedott/merge-me-action@v2
+        with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Check if the PR title starts with "Update AFFiNE Canary"
-          PR_TITLE=$(gh pr view https://github.com/${{ github.repository }}/pull/${{ github.event.number }} --json title -q ".title")
-          if [[ $PR_TITLE == "Update AFFiNE Canary"* ]]; then
-            gh pr merge --merge --auto --squash ${{ github.event.number }}
-            echo "Merged pull request #${{ github.event.number }}"
-          else
-            echo "Pull request #${{ github.event.number }} does not match auto-merge criteria"
-          fi

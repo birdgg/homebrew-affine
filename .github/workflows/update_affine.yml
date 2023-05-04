@@ -2,7 +2,7 @@ name: Update AFFiNE Canary Cask
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Runs daily at 00:00
+    - cron: "0 0,12 * * *" # Runs daily at 00:00
   workflow_dispatch:
 
 jobs:
