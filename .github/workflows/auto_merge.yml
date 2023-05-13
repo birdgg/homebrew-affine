@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Merge me!
-        if: >
-          github.event.workflow_run.event == 'pull_request' &&
-          github.event.workflow_run.conclusion == 'success'
-        uses: ridedott/merge-me-action@v2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --merge 
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
