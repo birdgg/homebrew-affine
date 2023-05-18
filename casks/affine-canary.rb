@@ -1,10 +1,10 @@
 cask "affine-canary" do
-  version "0.6.0-canary.1"
+  version "0.6.0-canary.4"
   if Hardware::CPU.arm?
-    sha256 "186170e98af1512ef38592a570ac509967840f66dc8488f9ebec134cbbacb772"
+    sha256 "e44e046f26742829659e9f70c0d38a36af73f15cc91652069ae005f017102d16"
     url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-arm64.dmg"
   else
-    sha256 "350176e0bcf2ae188cdb2fa757ab762fb393357913c224028007f2c69c4f1cdd"
+    sha256 "4559ba078c30df4e13baf10e1336f4bbae0dae357d5a5dd98e0ab469d4605e33"
     url "https://github.com/toeverything/AFFiNE/releases/download/v#{version}/affine-canary-macos-x64.dmg"
   end
 
